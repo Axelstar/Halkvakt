@@ -97,6 +97,16 @@ förslag står *"Inga träffar. Prova en annan stavning eller en ort i närheten
 Kontrollera nätet och försök igen."* Den som redan har en planerad resa ser under sökrutan *"Du har en planerad resa till {målet}.
 En ny sökning ersätter den och tar bort påminnelsen."* Går påminnelsen inte att sätta slås reglaget *Påminn mig före avresan* av
 igen, och felraden står kvar. Påminnelsen kommer med ljud; bannern under körning är tyst som förut.
+**Från 0.4.3 (28/11, DECISIONS #983, byggt i grenen och inte släppt)** har resans skärm två lägen. Överst väljer föraren *Åker
+nu* eller *Åker senare*. *Åker nu:* omdömet, ▶ *Starta vakten* och länkarna till kartapparna, som förut. *Åker senare:* raden *Jag
+åker* med datum och tid, reglaget *Påminn mig en kvart innan* (*En notis som öppnar resan*), omdömet och raden *"Det här är läget
+nu. Halkvakt hämtar det färskt när du öppnar påminnelsen eller appen."*; *Starta vakten* visas inte. Skärmen öppnas på *Åker nu*,
+och på *Åker senare* när en avresetid väntar. Klocktiderna vid sträckorna räknas från nu eller från den valda tiden. Lugna sträckor
+i följd står som en rad (*"Lugnt i 611 km. Inget halt rapporterat."*); en ensam lugn sträcka går att öppna som förut. Inuti en
+sträcka visas inte restidssträckorna. *ÖVRIGT PÅ VÄGEN* är en mening (*"Också längs vägen: vägarbeten (21), fartkameror (92) och
+vilt (1). Öppna en sträcka för att se vad det är."*) i stället för rader med antal, och vilt räknas för sig och inte som hinder.
+*HALKVAKT TROR · BETA* visas bara när beräkningen varnar. Blocket *NÄR ÅKER DU?* längst ner finns inte längre. *Spara resan* är inte
+byggd än, och raden *RESAN SPARAS INTE* står kvar.
 **Från 0.4.1 (68) (DECISIONS #930, Axels ritning 20/11)** är skärmen ny: under rubriken *{längd} · CA {restid}*; kortet
 *JUST NU* med *KOLLAT {tid}*, en rubrik (*Lugnt hela vägen.*, *Halt från {ort}.*, *Frysrisk redan från start.*), en mening om var
 det börjar, och när något är halt eller har frysrisk tre tal: *HALA STRÄCKOR*, *PLATSER MED FRYSRISK* och *SMHI-VARNINGAR*; ▶
