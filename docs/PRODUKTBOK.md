@@ -88,7 +88,13 @@ läget skrevs, och den valda faran får en vit kant; fartkamerorna går inte att
 röstens regel, +1 °C eller kallare med fukt, och förut stod varje station på +3 °C eller kallare; ingen ny skärmbild än) *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
 för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
-Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
+Inställningar). **Från 0.4.3 (28/11, DECISIONS #981, byggt i grenen och inte släppt)** följer startsidans knappar platsvalet:
+med *Alltid* och självstarten på visas bara *Planera resa*; annars *Starta vakten* och *Planera resa* bredvid varandra med länken
+*LÅT VAKTEN STARTA SJÄLV* under (med *Alltid* slår den på självstarten, annars leder den till platsvalet); med nekad plats står
+rubriken *"Vakten kan inte varna"*, *"Utan platsen vet Halkvakt inte vad som ligger framför dig."* och rutan *Platsen är avstängd
+för Halkvakt* med *Öppna Inställningar*, utan de två knapparna. Lampan vid *LIVE* är grön när inget är rapporterat nära och gul
+annars. Borta: *NÄRA DIG JUST NU* med *"Inget rapporterat inom sex mil."* när listan är tom, raden om antalet fartkameror, raden
+*INGA VARNINGAR SENASTE TUREN* och raden med farornas namn. Kartans utsnitt är inte ändrat än. Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
 *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
 resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
 Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**.

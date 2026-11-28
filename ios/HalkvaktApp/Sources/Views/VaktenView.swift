@@ -49,9 +49,11 @@ struct VaktenView: View {
     private var innehall: some View {
         let resa = efterResan
         let tur = senasteTuren
+        // Lampan (DECISIONS #981): grön när inget är rapporterat nära, gul när något är det eller platsen saknas.
+        let lugnt = harPlats != nil && naraFaror.isEmpty
         return VStack(spacing: 0) {
             BrandHeader(trailing: guardM.snapshotInfo == nil ? "Hämtar" : "Live",
-                        trailingColor: guardM.snapshotInfo == nil ? Brand.faint : Brand.yellow)
+                        trailingColor: guardM.snapshotInfo == nil ? Brand.faint : lugnt ? Brand.green : Brand.yellow)
 
             // Kort #203: frågan om resan står överst, före allt annat — den som öppnar appen efter
             // en körning ska se den utan att leta. Försvinner när allt är besvarat, och efter ett dygn.
@@ -91,39 +93,48 @@ struct VaktenView: View {
             }
             .padding(.top, 28)
 
-            // Bredvid varandra (Axel 14/11, DECISIONS #874), lika breda.
-            HStack(spacing: 10) {
-                Button { guardM.requestPermissionAndStart() } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "play.fill").font(.system(size: 12))
-                        Text("Starta vakten").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
-                    }
-                    .foregroundStyle(Brand.bg)
-                    .frame(maxWidth: .infinity).frame(height: 56)
-                    .background(Brand.yellow, in: Capsule())
-                }
-                .buttonStyle(PressScale())
-                Button { plan.begarSok() } label: {
-                    Text("Planera resa").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
-                        .foregroundStyle(Brand.text)
+            // Knapparna följer vad föraren har valt för platsen (DECISIONS #981, Malins förslag). Nekad plats: vägen in i
+            // inställningarna, utan knappar som inte kan göra något. Självstart: bara Planera resa. Annars båda, bredvid
+            // varandra och lika breda (Axel 14/11, DECISIONS #874), med länken till självstarten.
+            if guardM.locationDenied {
+                LocationDeniedRow().padding(.top, 14)
+            } else if wakes {
+                YellowPill(title: "Planera resa") { plan.begarSok() }.padding(.top, 24)
+            } else {
+                HStack(spacing: 10) {
+                    Button { guardM.requestPermissionAndStart() } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "play.fill").font(.system(size: 12))
+                            Text("Starta vakten").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                        }
+                        .foregroundStyle(Brand.bg)
                         .frame(maxWidth: .infinity).frame(height: 56)
-                        .background(Brand.panel, in: Capsule())
-                        .overlay(Capsule().strokeBorder(Brand.trackOff, lineWidth: 1))
+                        .background(Brand.yellow, in: Capsule())
+                    }
+                    .buttonStyle(PressScale())
+                    Button { plan.begarSok() } label: {
+                        Text("Planera resa").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                            .foregroundStyle(Brand.text)
+                            .frame(maxWidth: .infinity).frame(height: 56)
+                            .background(Brand.panel, in: Capsule())
+                            .overlay(Capsule().strokeBorder(Brand.trackOff, lineWidth: 1))
+                    }
+                    .buttonStyle(PressScale())
                 }
-                .buttonStyle(PressScale())
+                .padding(.top, 24)
+                MonoLink(title: "Låt vakten starta själv", action: latStartaSjalv).padding(.top, 4)
             }
-            .padding(.top, 24)
-            if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
 
             if let tur { kvitto(tur).padding(.top, 24) }
 
             naraDig(nara).padding(.top, 28)
 
-            Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? (prefs.lastTripEnd == nil ? "INGEN TUR ÄN" : "INGA VARNINGAR SENASTE TUREN"))
-                .font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.faint)
-                .padding(.top, 24)
-            Text(kallor).font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.dim)
-                .multilineTextAlignment(.center).padding(.top, 8)
+            // Raden om senaste turen står bara när turen hade varningar, och raden med farornas namn är borta (DECISIONS #981).
+            if let tur {
+                Text("\(tur.varningar.count) \(tur.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR")
+                    .font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.faint)
+                    .padding(.top, 24)
+            }
             // Löftet står i underrubriken när platsen saknas, annars här.
             if harPlats != nil {
                 Text(Platsord.lofte)
@@ -167,6 +178,11 @@ struct VaktenView: View {
     }
 
     /// iOS frågar bara en gång. Har föraren redan svarat öppnas appens sida i Inställningar.
+    /// Länken under knapparna: med Alltid slås självstarten på, annars leder den till platsvalet.
+    private func latStartaSjalv() {
+        if guardM.authStatus == .authorizedAlways { prefs.autoWake = true } else { slaPaPlatsen() }
+    }
+
     private func slaPaPlatsen() {
         if CLLocationManager().authorizationStatus == .notDetermined {
             guardM.requestLocationPermission()
@@ -189,12 +205,14 @@ struct VaktenView: View {
 
     /// "Halka 12,4 km bort", "Inget rapporterat nära dig", eller "Redo." när platsen eller vägdatan saknas.
     private func rubrikNu(_ nara: [NearbyItem]) -> String {
+        if guardM.locationDenied { return "Vakten kan inte varna" }
         guard harPlats != nil, guardM.snapshotInfo != nil else { return "Redo." }
         guard let forst = nara.first else { return "Inget rapporterat nära dig" }
         return "\(forst.rubrik) \(Nearby.distText(forst.distM)) bort"
     }
 
     private func underrubrik(_ nara: [NearbyItem]) -> String {
+        if guardM.locationDenied { return "Utan platsen vet Halkvakt inte vad som ligger framför dig." }
         guard harPlats != nil, guardM.snapshotInfo != nil else { return subtitle }
         let start = wakes ? "Vakten vaknar själv när du kör." : "Tryck Starta vakten innan du kör."
         return nara.isEmpty ? "Inget inom sex mil just nu. \(start)" : start
@@ -203,12 +221,9 @@ struct VaktenView: View {
     /// Ett tryck väljer faran, ett tryck till på samma eller bredvid kartan släpper den.
     private func valj(_ id: String?) { valdFara = id == valdFara ? nil : id }
 
-    /// Kartan, de närmaste farorna och antalet fartkameror inom sex mil.
+    /// Kartan och de närmaste farorna. Utan något nära står bara kartan: rubriken har redan sagt det (DECISIONS #981).
     private func naraDig(_ nara: [NearbyItem]) -> some View {
-        let kameror = harPlats.map { p in
-            guardM.hazards.filter { Self.arKamera($0) && Nearby.distanceM($0, lon: p.lon, lat: p.lat) <= Nearby.maxM }.count
-        } ?? 0
-        return VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             NaraDigKarta(faror: guardM.hazards, plats: harPlats, valt: valdFara) { valj($0) }
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
             Kartforklaring(sista: .du).padding(.top, 10).padding(.horizontal, 4)
@@ -219,15 +234,13 @@ struct VaktenView: View {
                          lagetFran: guardM.lagetFran)
                     .padding(.top, 12)
             }
-            MonoLabel(text: harPlats == nil ? "Halkan i landet just nu" : "Nära dig just nu")
-                .padding(.top, 16).padding(.bottom, 10).padding(.horizontal, 4)
             if harPlats == nil {
+                MonoLabel(text: "Halkan i landet just nu").padding(.top, 16).padding(.bottom, 10).padding(.horizontal, 4)
                 Text("Slå på platsen för att se vad som finns nära dig.").font(Typo.sans(14)).foregroundStyle(Brand.text2)
                     .padding(.horizontal, 4)
                 MonoLink(title: "Slå på platsen", action: slaPaPlatsen).padding(.horizontal, 4)
-            } else if nara.isEmpty {
-                Text("Inget rapporterat inom sex mil.").font(Typo.sans(14)).foregroundStyle(Brand.text2).padding(.horizontal, 4)
-            } else {
+            } else if !nara.isEmpty {
+                MonoLabel(text: "Nära dig just nu").padding(.top, 16).padding(.bottom, 10).padding(.horizontal, 4)
                 RowPanel {
                     ForEach(Array(nara.enumerated()), id: \.element.id) { i, item in
                         Button { valj(item.id) } label: { NearbyRow(item: item, divider: i < nara.count - 1) }
@@ -235,10 +248,6 @@ struct VaktenView: View {
                             .accessibilityHint(item.id == valdFara ? "Döljer kortet om faran" : "Visar mer om faran")
                     }
                 }
-            }
-            if kameror > 0 {
-                MonoLabel(text: kameror == 1 ? "1 fartkamera inom sex mil" : "\(kameror) fartkameror inom sex mil", color: Brand.faint)
-                    .padding(.top, 12).padding(.horizontal, 4)
             }
         }
     }
@@ -397,14 +406,6 @@ struct VaktenView: View {
         // "skickas aldrig till Halkvakt av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #900, fråga 9):
         // "lämnar inte telefonen" (#320) blev osant med kartan från Apple (0.4.1), och "av sig själv" står kvar för betatestets facitsvar.
         (wakes ? "Vakten vaknar själv när du kör. " : "") + Platsord.lofte
-    }
-
-    /// "HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR" — bara de källor som är på.
-    private var kallor: String {
-        let items: [(String, Bool)] = [("Halka", prefs.slippery), ("Vilt", prefs.wildlife), ("Olyckor", prefs.accident),
-                                       ("Frysrisk", prefs.icing), ("Kameror", prefs.camera)]
-        let on = items.filter { $0.1 }.map { $0.0.uppercased() }
-        return on.isEmpty ? "ALLA KÄLLOR AV" : on.joined(separator: " · ")
     }
 }
 
