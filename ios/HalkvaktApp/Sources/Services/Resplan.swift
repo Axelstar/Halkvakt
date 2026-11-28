@@ -121,7 +121,9 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
     }
 
     /// En sparad sökt resa öppnas (DECISIONS #985): adressen söks igen hos Apple, och vägen räknas härifrån.
-    func planera(sokt fraga: String, namn: String) async -> Bool {
+    /// `fran` är adressen resan sparades från, för en resa som gäller åt båda hållen (DECISIONS #986): står föraren vid målet
+    /// räknas vägen dit i stället.
+    func planera(sokt fraga: String, fran: String?) async -> Bool {
         let status = CLLocationManager().authorizationStatus
         guard status == .authorizedWhenInUse || status == .authorizedAlways else {
             GuardManager.shared.requestLocationPermission()
@@ -130,16 +132,46 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
         }
         let f = MKLocalSearch.Request()
         f.naturalLanguageQuery = fraga
-        return await rakna(f, mal: namn, fraga: fraga)
+        return await rakna(f, mal: Self.kort(fraga), fraga: fraga, fran: fran)
     }
 
-    private func rakna(_ sokning: MKLocalSearch.Request, mal namn: String, fraga text: String) async -> Bool {
+    /// Adressen där föraren är, som text: gatan med nummer och orten. Apple slår upp den, och får då positionen. Används när en
+    /// sökt resa sparas åt båda hållen (DECISIONS #986). nil utan plats eller svar.
+    func harAdress() async -> String? {
+        guard let har = CLLocationManager().location,
+              let p = try? await CLGeocoder().reverseGeocodeLocation(har).first else { return nil }
+        let gata = [p.thoroughfare, p.subThoroughfare].compactMap { $0 }.joined(separator: " ")
+        let delar = [gata.isEmpty ? nil : gata, p.locality].compactMap { $0 }
+        return delar.isEmpty ? nil : delar.joined(separator: ", ")
+    }
+
+    /// Så nära målet räknas föraren som framme, och en resa åt båda hållen vänder.
+    private static let framkomstM = 500.0
+    /// Första ledet i en adress: "Bellevuevägen 53, Malmö" blir "Bellevuevägen 53".
+    private static func kort(_ adress: String) -> String {
+        adress.split(separator: ",").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? adress
+    }
+
+    private func rakna(_ sokning: MKLocalSearch.Request, mal namn: String, fraga text: String, fran: String? = nil) async -> Bool {
         lage = .soker
         do {
+            var namn = namn
             let svar = try await MKLocalSearch(request: sokning).start()
-            guard let mal = svar.mapItems.first else {
+            guard var mal = svar.mapItems.first else {
                 lage = .fel("Adressen hittades inte. Prova en annan.")
                 return false
+            }
+            // Åt båda hållen: den som står vid målet ska till adressen resan sparades från.
+            if let fran, let har = CLLocationManager().location, let dit = mal.placemark.location,
+               har.distance(from: dit) < Self.framkomstM {
+                let hem = MKLocalSearch.Request()
+                hem.naturalLanguageQuery = fran
+                guard let andra = try await MKLocalSearch(request: hem).start().mapItems.first else {
+                    lage = .fel("Adressen hittades inte. Prova en annan.")
+                    return false
+                }
+                mal = andra
+                namn = Self.kort(fran)
             }
             let fraga = MKDirections.Request()
             fraga.source = MKMapItem.forCurrentLocation()

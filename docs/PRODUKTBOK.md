@@ -139,7 +139,8 @@ vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapp
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
 avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns
 längs vägen. Den öppnar Halkvakt, där läget hämtas färskt."* Notisen lyder *"Dags att se vägen till {målet}"*, *"Du åker om
-en kvart. Öppna Halkvakt och se läget längs vägen."* En resa med avresetid står överst på Redo som *PLANERAD RESA*,
+en kvart. Öppna Halkvakt och se läget längs vägen."* (från 0.4.3 (82): *"{målet} om en kvart"*, *"Öppna Halkvakt och se läget
+längs vägen."*, eftersom rubriken klipptes på låsskärmen) En resa med avresetid står överst på Redo som *PLANERAD RESA*,
 *Till {målet}*, *Avresa {dag och tid}. Se läget längs vägen.*, tills sex timmar efter avresan, och *TA BORT RESAN* tar
 bort den. Under sökrutan står *NÄR DU SÖKER*: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och
 vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."* **Löftets rad på Redo är inte ändrad** (#872): vad Apple får veta
@@ -367,7 +368,11 @@ Först då skickas något.
 **Från 0.4.3, efter (81) (DECISIONS #985): en sökt resa går att spara.** Under en planerad resa står knappen *Spara resan*. Ett
 tryck öppnar en ruta med namnet (adressen är förvald) och raden *Adressen sparas i telefonen. Vägen hämtas från Apple varje gång
 du öppnar resan.* Sparad resa visar *Sparad under Resor*. I fliken *Resor* står listan *Sökta resor*, högst fem, med namnet och
-raden *Öppna för att se läget*; ett tryck söker adressen igen och öppnar resan, och krysset tar bort den efter en fråga. Texten
+raden *Öppna för att se läget*; ett tryck söker adressen igen och öppnar resan, och krysset tar bort den efter en fråga.
+Från samma bygge (DECISIONS #986) slår appen upp adressen där föraren är när *Spara resan* trycks, och rutan har knapparna *Spara
+åt båda hållen* och *Spara bara dit*. En resa åt båda hållen har raden *Båda hållen · Öppna för att se läget*, och den som står
+vid målet får vägen tillbaka. Ett tryck på fliken *Resor* medan den visas går hem till listan. Avståndet på startsidan står utan
+decimal från en mil (*Frysrisk 40 km bort*), i båda apparna. Texten
 *När du söker* säger att Apple får veta var du är och vart du ska också när en sparad sökt resa öppnas. Ingen skärmbild än.
 
 **Från 0.4.3, efter (81) (DECISIONS #979, #980): frågan till den som redan har appen är ett blad, och valet om erbjudanden är

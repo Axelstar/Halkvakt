@@ -53,5 +53,7 @@ class NearbyTest {
         assertEquals("50 m", Nearby.distText(10.0))
         assertEquals("800 m", Nearby.distText(812.0))
         assertEquals("1,2 km", Nearby.distText(1234.0))
+        assertEquals("9,9 km", Nearby.distText(9940.0))
+        assertEquals("40 km", Nearby.distText(40000.0))
     }
 }

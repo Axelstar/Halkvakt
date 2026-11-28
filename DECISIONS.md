@@ -20232,3 +20232,20 @@ Samma läsning som om kartan i DECISIONS #933. Läsningen är Claudes och ingen 
 Spara vägen som den är: det Apples villkor inte tillåter, som de är lästa här.
 
 **Stomdokument:** APP — fliken Resor och sparade sökta resor; FAV — hur en sökt resa sparas
+
+## #986 (28/11 2026) En sparad sökt resa kan gälla åt båda hållen (bygger på DECISIONS #985; kort #659)
+**Beslut.** Axel 28/11: *"Okay that sounds good!"*, efter frågan *"Should both options not work? For example, I download the app
+and then I want to add the trips I do on a regular and plan bigger ones."* När en sökt resa sparas slår appen upp adressen där
+föraren är, och rutan erbjuder *Spara åt båda hållen* eller *Spara bara dit*. En resa åt båda hållen sparar båda adresserna som
+text. När den öppnas och föraren står inom 500 m från målet räknas vägen till adressen den sparades från; annars till målet.
+
+**Vad som går till Apple.** Uppslagningen av adressen härifrån skickar förarens position till Apple i det ögonblick föraren
+trycker *Spara resan*. Det står under *När du söker* i fliken, och raden i CLAUDE.md är ändrad i samma commit. integritet.html
+ska få samma tillägg som i DECISIONS #985 före ett butiksbygge.
+
+**Avvikelse från det Axel fick beskrivet.** Rutan har två knappar i stället för ett reglage: en iOS-ruta med namnfält rymmer
+inget reglage.
+
+**Alternativ.** Två sparade resor, en åt varje håll: inget nytt att bygga, men två rader för samma pendling.
+
+**Stomdokument:** APP — sparade sökta resor åt båda hållen; FAV — hur en sökt resa sparas

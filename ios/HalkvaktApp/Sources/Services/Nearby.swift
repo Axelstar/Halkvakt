@@ -104,6 +104,8 @@ enum Nearby {
             let steg = max(50, Int((m / 50).rounded()) * 50)
             return "\(steg) m"
         }
+        // Från en mil utan decimal: 40,0 km sa mer än måttet bär (Axels inspelning 28/11).
+        if m >= 9950 { return String(format: "%.0f km", m / 1000) }
         return String(format: "%.1f km", m / 1000).replacingOccurrences(of: ".", with: ",")
     }
 

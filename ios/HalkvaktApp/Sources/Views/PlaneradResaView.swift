@@ -13,6 +13,8 @@ struct PlaneradResaView: View {
     @State private var sparar = false
     @State private var sparnamn = ""
     @State private var sparfel: String?
+    @State private var sparfran: String?
+    @Environment(\.scenePhase) private var fas
     @State private var rapport: Rapporten.Planerad?
     @State private var strackor: [Resstracka] = []
     @State private var kum: [Double] = []
@@ -48,11 +50,13 @@ struct PlaneradResaView: View {
                             DatePicker("Jag åker", selection: $avresa, in: Date.now.addingTimeInterval(AvreseNotis.foreS + 60)..., displayedComponents: [.date, .hourAndMinute])
                                 .font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
                                 .tint(Brand.green)
-                                .environment(\.locale, Locale(identifier: "sv_SE"))
                                 .padding(.vertical, 10)
                             DashedDivider()
                             GreenToggleRow(title: "Påminn mig en kvart innan", sub: "En notis som öppnar resan", isOn: $paminn)
                         }
+                        // På panelen och inte på väljaren: datumet stod först som 2026-11-28 och bytte sedan till 28 nov. 2026
+                        // (Axels inspelning 28/11).
+                        .environment(\.locale, Locale(identifier: "sv_SE"))
                         .padding(.top, 14)
                         if notisFel {
                             Text("Påminnelsen kunde inte sättas. Kontrollera att notiserna är på för Halkvakt.")
@@ -127,7 +131,11 @@ struct PlaneradResaView: View {
                             if sokresor.finns(fraga) {
                                 MonoLabel(text: "Sparad under Resor", color: Brand.greenText)
                             } else {
-                                NeutralPill(title: "Spara resan") { sparnamn = p.mal; sparar = true }
+                                // Adressen härifrån slås upp först, så att rutan kan erbjuda båda hållen (DECISIONS #986).
+                                NeutralPill(title: "Spara resan") {
+                                    sparnamn = p.mal
+                                    Task { sparfran = await plan.harAdress(); sparar = true }
+                                }
                                 if let sparfel {
                                     Text(sparfel).font(Typo.sans(13)).foregroundStyle(Brand.yellow).multilineTextAlignment(.center)
                                 }
@@ -136,16 +144,16 @@ struct PlaneradResaView: View {
                         .frame(maxWidth: .infinity).padding(.top, 24)
                         .alert("Spara resan", isPresented: $sparar) {
                             TextField("Namn", text: $sparnamn)
-                            Button("Spara") {
-                                switch sokresor.spara(namn: sparnamn, fraga: fraga) {
-                                case .sparad: sparfel = nil
-                                case .fullt: sparfel = "Du har \(Sokresor.max) sparade sökta resor. Ta bort en under Resor för att spara fler."
-                                case .fel: sparfel = "Resan gick inte att spara."
-                                }
+                            if let sparfran {
+                                Button("Spara åt båda hållen") { spara(fraga, fran: sparfran) }
+                                Button("Spara bara dit") { spara(fraga, fran: nil) }
+                            } else {
+                                Button("Spara") { spara(fraga, fran: nil) }
                             }
                             Button("Avbryt", role: .cancel) {}
                         } message: {
-                            Text("Adressen sparas i telefonen. Vägen hämtas från Apple varje gång du öppnar resan.")
+                            Text((sparfran.map { "Härifrån: \($0). " } ?? "")
+                                 + "Adresserna sparas i telefonen. Vägen hämtas från Apple varje gång du öppnar resan.")
                         }
                     }
 
@@ -172,6 +180,8 @@ struct PlaneradResaView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) { Color.clear.frame(height: 76).frame(maxWidth: .infinity).background(Brand.bg) }
         .toolbar(.hidden, for: .navigationBar)
         .refreshable { await hamta() }
+        // Läget hämtas om när appen kommer fram igen: Kollat 09:18 stod kvar 09:42 under Just nu (Axels skärmbild 28/11).
+        .onChange(of: fas) { _, f in if f == .active { Task { await hamta() } } }
         .task {
             if let t = plan.plan?.avresa, t > .now {
                 avresa = t
@@ -336,6 +346,14 @@ struct PlaneradResaView: View {
 
     /// Öppnar resans mål i förarens kartapp, som visar vägarna dit. Målet går då till den appen, på förarens tryck.
     /// Vakten startar i samma tryck (Axel 14/11, DECISIONS #875), så att rösten är med när föraren kör efter kartappen.
+    private func spara(_ fraga: String, fran: String?) {
+        switch sokresor.spara(namn: sparnamn, fraga: fraga, fran: fran) {
+        case .sparad: sparfel = nil
+        case .fullt: sparfel = "Du har \(Sokresor.max) sparade sökta resor. Ta bort en under Resor för att spara fler."
+        case .fel: sparfel = "Resan gick inte att spara."
+        }
+    }
+
     private func oppna(_ mall: String, _ p: Resplan.Plan) {
         guard let mal = p.punkter.last, mal.count == 2,
               let url = URL(string: String(format: mall, "\(mal[1]),\(mal[0])")) else { return }

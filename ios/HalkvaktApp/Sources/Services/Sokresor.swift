@@ -1,5 +1,5 @@
-// Sparade sökta resor (DECISIONS #982 punkt 3, #985). Det som sparas är namnet föraren ger resan och adressen som söktes, som
-// text. Vägen sparas inte: Apples villkor (utvecklaravtalet, bilaga 6 punkt 2.5) tillåter inte att deras kartdata lagras annat
+// Sparade sökta resor (DECISIONS #982 punkt 3, #985, #986). Det som sparas är namnet föraren ger resan och adressen som söktes,
+// som text, och för en resa åt båda hållen också adressen den sparades från. Vägen sparas inte: Apples villkor (utvecklaravtalet, bilaga 6 punkt 2.5) tillåter inte att deras kartdata lagras annat
 // än tillfälligt, och vägen är deras koordinater. När resan öppnas frågar appen Apple om vägen igen.
 // En fil under Application Support/sokresor/, undantagen från säkerhetskopian som de körda resorna. Inget här når nätet.
 import Foundation
@@ -10,6 +10,8 @@ struct Sokresa: Codable, Equatable, Identifiable {
     var namn: String
     /// Adressen som text, som föraren valde den i söklistan.
     let fraga: String
+    /// Adressen resan sparades från, när den gäller åt båda hållen (DECISIONS #986). nil för en resa som bara gäller dit.
+    var fran: String?
 }
 
 @MainActor
@@ -29,11 +31,11 @@ final class Sokresor {
     func finns(_ fraga: String) -> Bool { resor.contains { $0.fraga == fraga } }
 
     /// Sparar adressen under ett namn. Tomt namn ger adressen som namn. Samma adress sparas inte två gånger.
-    func spara(namn: String, fraga: String) -> Svar {
+    func spara(namn: String, fraga: String, fran: String? = nil) -> Svar {
         if finns(fraga) { return .sparad }
         guard resor.count < Self.max else { return .fullt }
         let n = namn.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lista = resor + [Sokresa(id: UUID().uuidString, namn: n.isEmpty ? fraga : n, fraga: fraga)]
+        let lista = resor + [Sokresa(id: UUID().uuidString, namn: n.isEmpty ? fraga : n, fraga: fraga, fran: fran)]
         guard Self.skriv(lista) else { return .fel }
         resor = lista
         return .sparad
