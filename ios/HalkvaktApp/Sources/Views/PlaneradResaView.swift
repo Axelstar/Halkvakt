@@ -1,4 +1,5 @@
-// EN PLANERAD RESA FÖRE START (kort #659, DECISIONS #870, ny skärm #930, Förslag A #933): omdömet i en mening överst, Starta
+// EN PLANERAD RESA FÖRE START (kort #659, DECISIONS #870, ny skärm #930, Förslag A #933, två lägen #983): valet Åker nu eller
+// Åker senare, omdömet i en mening, Starta
 // vakten, vägen på kartan med ett gult märke per halksträcka, resans sträckor i den ordning föraren kör, resten av rapporten och
 // en påminnelse före avresan. Allt är läget nu: klocktiderna vid sträckorna säger när föraren är där, inte hur vägen är då.
 // Kartan är Apples, i gråskala: Apples villkor säger att vägen de räknar ut bara får visas på deras karta (bilaga 6, punkt 2.4).
@@ -13,6 +14,8 @@ struct PlaneradResaView: View {
     @State private var kum: [Double] = []
     @State private var gickInte = false
     @State private var paminn = false
+    /// Läget Åker senare (DECISIONS #983). Skärmen öppnas på Åker nu, och på Åker senare när en avresetid väntar.
+    @State private var senare = false
     @State private var avresa = Date.now.addingTimeInterval(3600)
     @State private var notisFel = false
     /// Sant när reglaget just slogs av för att påminnelsen inte gick att sätta: då ska felraden stå kvar.
@@ -32,6 +35,28 @@ struct PlaneradResaView: View {
                         .accessibilityAddTraits(.isHeader)
                     MonoLabel(text: Self.matt(p), size: 11).padding(.top, 14)
 
+                    // Två lägen (DECISIONS #983): den som åker nu startar vakten, den som åker senare väljer tid och påminnelse.
+                    Lagesval(senare: $senare).padding(.top, 20)
+                    if senare {
+                        RowPanel {
+                            // Tidigast en kvart och en minut fram: påminnelsen kommer en kvart före, och en tidigare tid går inte att sätta.
+                            // Utan gränsen stannar hjulet på ogiltiga tider på väg till den rätta (Axels inspelning 28/11).
+                            DatePicker("Jag åker", selection: $avresa, in: Date.now.addingTimeInterval(AvreseNotis.foreS + 60)..., displayedComponents: [.date, .hourAndMinute])
+                                .font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
+                                .tint(Brand.green)
+                                .environment(\.locale, Locale(identifier: "sv_SE"))
+                                .padding(.vertical, 10)
+                            DashedDivider()
+                            GreenToggleRow(title: "Påminn mig en kvart innan", sub: "En notis som öppnar resan", isOn: $paminn)
+                        }
+                        .padding(.top, 14)
+                        if notisFel {
+                            Text("Påminnelsen kunde inte sättas. Kontrollera att notiserna är på för Halkvakt.")
+                                .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.yellow)
+                                .padding(.top, 12).padding(.horizontal, 4)
+                        }
+                    }
+
                     if let rapport {
                         dom(rapport, p).padding(.top, 24)
                     } else {
@@ -39,31 +64,39 @@ struct PlaneradResaView: View {
                             .font(Typo.sans(15)).foregroundStyle(Brand.text2).padding(.top, 28)
                     }
 
-                    // Det föraren gör står direkt under domen, före resten av rapporten (Axel 14/11, DECISIONS #874).
-                    HStack {
-                        Spacer()
-                        YellowPill(title: "Starta vakten", playIcon: true) { GuardManager.shared.requestPermissionAndStart() }
-                        Spacer()
+                    if senare, rapport != nil {
+                        Text("Det här är läget nu. Halkvakt hämtar det färskt när du öppnar påminnelsen eller appen.")
+                            .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                            .padding(.top, 12).padding(.horizontal, 4)
                     }
-                    .padding(.top, 24)
-                    if let hinder = rapport?.rader.first(where: { Self.tipsSlag.contains($0.slag) }) {
-                        Text("\(hinder.rubrik) längs vägen. Se om det finns en annan väg i din kartapp.")
-                            .font(Typo.sans(14, .medium)).lineSpacing(3).foregroundStyle(Brand.yellow)
-                            .multilineTextAlignment(.center).frame(maxWidth: .infinity)
-                            .padding(.top, 16)
-                    }
-                    HStack(spacing: 24) {
-                        MonoLink(title: "Öppna i Kartor") { oppna("http://maps.apple.com/?daddr=%@&dirflg=d", p) }
-                        MonoLink(title: "Öppna i Google Maps") {
-                            oppna("https://www.google.com/maps/dir/?api=1&destination=%@&travelmode=driving", p)
+
+                    if !senare {
+                        // Det föraren gör står direkt under domen, före resten av rapporten (Axel 14/11, DECISIONS #874).
+                        HStack {
+                            Spacer()
+                            YellowPill(title: "Starta vakten", playIcon: true) { GuardManager.shared.requestPermissionAndStart() }
+                            Spacer()
                         }
-                    }
-                    .frame(maxWidth: .infinity).padding(.top, 4)
-                    // DECISIONS #875: sagt där länkarna står, och bara när det är sant.
-                    if GuardManager.shared.platsTillaten {
-                        Text("Vakten startar när du öppnar kartappen.")
-                            .font(Typo.sans(13)).foregroundStyle(Brand.dim)
-                            .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                        .padding(.top, 24)
+                        if let hinder = rapport?.rader.first(where: { Self.tipsSlag.contains($0.slag) }) {
+                            Text("\(hinder.rubrik) längs vägen. Se om det finns en annan väg i din kartapp.")
+                                .font(Typo.sans(14, .medium)).lineSpacing(3).foregroundStyle(Brand.yellow)
+                                .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                                .padding(.top, 16)
+                        }
+                        HStack(spacing: 24) {
+                            MonoLink(title: "Öppna i Kartor") { oppna("http://maps.apple.com/?daddr=%@&dirflg=d", p) }
+                            MonoLink(title: "Öppna i Google Maps") {
+                                oppna("https://www.google.com/maps/dir/?api=1&destination=%@&travelmode=driving", p)
+                            }
+                        }
+                        .frame(maxWidth: .infinity).padding(.top, 4)
+                        // DECISIONS #875: sagt där länkarna står, och bara när det är sant.
+                        if GuardManager.shared.platsTillaten {
+                            Text("Vakten startar när du öppnar kartappen.")
+                                .font(Typo.sans(13)).foregroundStyle(Brand.dim)
+                                .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                        }
                     }
 
                     if let rapport {
@@ -75,7 +108,7 @@ struct PlaneradResaView: View {
                                 Kartforklaring(sista: .vagen).padding(.top, 12).padding(.bottom, 6)
                                 MonoLabel(text: "Kartan kommer från Apple", color: Brand.faint).padding(.bottom, 14)
                                 ResansStrackor(strackor: strackor, mal: p.mal, totalM: Int((kum.last ?? 0).rounded()),
-                                               restidS: p.restidS, avresa: max(p.avresa ?? Date.now, Date.now))
+                                               restidS: p.restidS, avresa: senare ? max(avresa, Date.now) : Date.now)
                                     .id(rapport.kollat)
                             }
                             .padding(20)
@@ -83,26 +116,6 @@ struct PlaneradResaView: View {
                         }
                         ovrigt(rapport)
                     }
-
-                    MonoLabel(text: "När åker du?").padding(.top, 24).padding(.bottom, 10).padding(.horizontal, 4)
-                    RowPanel {
-                        GreenToggleRow(title: "Påminn mig före avresan", sub: "En notis en kvart innan", isOn: $paminn)
-                        if paminn {
-                            DashedDivider()
-                            // Tidigast en kvart och en minut fram: påminnelsen kommer en kvart före, och en tidigare tid går inte att sätta.
-                            // Utan gränsen stannar hjulet på ogiltiga tider på väg till den rätta (Axels inspelning 28/11).
-                            DatePicker("Avresa", selection: $avresa, in: Date.now.addingTimeInterval(AvreseNotis.foreS + 60)..., displayedComponents: [.date, .hourAndMinute])
-                                .font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
-                                .tint(Brand.green)
-                                .environment(\.locale, Locale(identifier: "sv_SE"))
-                                .padding(.vertical, 10)
-                        }
-                    }
-                    Text(notisFel
-                         ? "Påminnelsen kunde inte sättas. Kontrollera att notiserna är på och att tiden ligger minst en kvart fram."
-                         : "Notisen säger inte vad som finns längs vägen. Den öppnar Halkvakt, där läget hämtas färskt.")
-                        .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(notisFel ? Brand.yellow : Brand.dim)
-                        .padding(.top, 14).padding(.horizontal, 4)
 
                     VStack(spacing: 4) {
                         MonoLabel(text: p.avresa == nil ? "Resan sparas inte" : "Avresa \(p.avresa?.dagOchKlockslag ?? "")")
@@ -130,6 +143,7 @@ struct PlaneradResaView: View {
             if let t = plan.plan?.avresa, t > .now {
                 avresa = t
                 paminn = true
+                senare = true
             }
             await hamta()
         }
@@ -190,7 +204,7 @@ struct PlaneradResaView: View {
     /// Olyckorna har en egen rad, överst, när det finns någon. Restidssträckorna är mätpunkter och inga händelser.
     private static let sorter: [(namn: String, slag: Set<RapportSlag>)] = [
         ("Olyckor", [.olycka]), ("Vägarbeten", [.vagarbete, .hastighet, .omledning]), ("Fartkameror", [.kamera]),
-        ("Hinder", [.hinder, .vilt]), ("Trafik", [.ko, .farja]),
+        ("Hinder", [.hinder]), ("Vilt", [.vilt]), ("Trafik", [.ko, .farja]),
     ]
 
     /// En rad under Övrigt på vägen: rubriken, och texten först när föraren öppnar raden (DECISIONS #931), som sträckorna.
@@ -242,17 +256,20 @@ struct PlaneradResaView: View {
                 // av varje slag, och SMHI:s varningar, som gäller hela resan.
                 let sorter = Self.sorter.map { s in (namn: s.namn, antal: rader.filter { s.slag.contains($0.slag) }.count) }.filter { $0.antal > 0 }
                 let smhi = grupper.filter { $0.slag == .smhi }
-                RowPanel {
-                    ForEach(Array(sorter.enumerated()), id: \.element.namn) { i, s in
-                        ReceiptRow(label: s.namn, value: "\(s.antal)", divider: i < sorter.count - 1 || !smhi.isEmpty)
-                    }
-                    ForEach(Array(smhi.enumerated()), id: \.element.id) { i, g in
-                        ovrigRad(id: g.id, titel: g.rubrik, text: g.text, divider: i < smhi.count - 1)
-                    }
-                }
                 if !sorter.isEmpty {
-                    Text("Öppna en sträcka för att se vad det är.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim)
-                        .padding(.top, 14).padding(.horizontal, 4)
+                    // En mening i stället för rader med antal (DECISIONS #983): talen går inte att göra något med, sträckorna gör det.
+                    let delar = sorter.map { "\($0.namn.lowercased()) (\($0.antal))" }
+                    let lista = delar.count > 1 ? delar.dropLast().joined(separator: ", ") + " och " + (delar.last ?? "") : (delar.first ?? "")
+                    Text("Också längs vägen: \(lista). Öppna en sträcka för att se vad det är.")
+                        .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.horizontal, 4)
+                }
+                if !smhi.isEmpty {
+                    RowPanel {
+                        ForEach(Array(smhi.enumerated()), id: \.element.id) { i, g in
+                            ovrigRad(id: g.id, titel: g.rubrik, text: g.text, divider: i < smhi.count - 1)
+                        }
+                    }
+                    .padding(.top, sorter.isEmpty ? 0 : 14)
                 }
             } else {
                 RowPanel {
@@ -267,10 +284,9 @@ struct PlaneradResaView: View {
                 Text(tomt).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim).padding(.top, 14).padding(.horizontal, 4)
             }
 
-            MonoLabel(text: "Halkvakt tror · beta").padding(.top, 24).padding(.bottom, 10).padding(.horizontal, 4)
-            if let tomt = ResansRapport.kandidatTomt(r.kandidat, gammaltVaglag: r.gammaltVaglag) {
-                Text(tomt).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.horizontal, 4)
-            } else if let kandidat = r.kandidat {
+            // Rutan visas bara när beräkningen varnar (DECISIONS #983). Förut stod en text också när den inte gjorde det.
+            if ResansRapport.kandidatTomt(r.kandidat, gammaltVaglag: r.gammaltVaglag) == nil, let kandidat = r.kandidat {
+                MonoLabel(text: "Halkvakt tror · beta").padding(.top, 24).padding(.bottom, 10).padding(.horizontal, 4)
                 RowPanel {
                     ForEach(Array(kandidat.enumerated()), id: \.element.id) { i, k in
                         RapportRadVy(titel: k.rubrik, text: k.text, divider: i < kandidat.count - 1)
@@ -332,5 +348,35 @@ struct PlaneradResaView: View {
         let tid = m < 90 ? "\(max(m, 5)) min" : m % 60 < 15 || m % 60 > 45 ? "\(Int((Double(m) / 60).rounded())) tim"
             : "\(m / 60) tim \(m % 60) min"
         return "\(kmText(p.km)) · ca \(tid)"
+    }
+}
+
+/// Valet överst på en planerad resa: Åker nu eller Åker senare (DECISIONS #983).
+private struct Lagesval: View {
+    @Binding var senare: Bool
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Lage(titel: "Åker nu", vald: !senare) { senare = false }
+            Lage(titel: "Åker senare", vald: senare) { senare = true }
+        }
+        .padding(4)
+        .background(Brand.panel, in: Capsule())
+        .overlay(Capsule().strokeBorder(Brand.line, lineWidth: 1))
+    }
+
+    private struct Lage: View {
+        let titel: String
+        let vald: Bool
+        let action: () -> Void
+
+        var body: some View {
+            Button(action: action) {
+                Text(titel).font(Typo.sans(15, .semibold)).foregroundStyle(vald ? Brand.bg : Brand.text2)
+                    .frame(maxWidth: .infinity).frame(height: 44)
+                    .background(vald ? Brand.text : Color.clear, in: Capsule())
+            }
+            .accessibilityAddTraits(vald ? .isSelected : [])
+        }
     }
 }

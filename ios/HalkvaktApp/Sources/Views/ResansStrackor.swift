@@ -13,19 +13,48 @@ struct ResansStrackor: View {
     let avresa: Date
     @State private var oppen: Int?
 
+    /// En rad på skärmen: en sträcka, eller flera lugna sträckor i följd (DECISIONS #983).
+    private struct Del: Identifiable {
+        let forsta: Int
+        var sista: Int
+        var id: Int { forsta }
+    }
+
+    /// Lugna sträckor i följd slås ihop till en rad. En ensam lugn sträcka går att öppna som de andra.
+    private var delar: [Del] {
+        var ut: [Del] = []
+        for i in strackor.indices {
+            if strackor[i].lage == .lugnt, let senast = ut.last, strackor[senast.sista].lage == .lugnt {
+                ut[ut.count - 1].sista = i
+            } else {
+                ut.append(Del(forsta: i, sista: i))
+            }
+        }
+        return ut
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(strackor.enumerated()), id: \.offset) { i, s in
+            ForEach(delar) { del in
+                let i = del.forsta
+                let s = strackor[i]
                 plats(s.fran ?? "Start", m: s.franM, fylld: false)
                 HStack(alignment: .top, spacing: 12) {
                     Stapel().frame(width: 20)
-                    VStack(alignment: .leading, spacing: 0) {
-                        Button { oppen = oppen == i ? nil : i } label: { rubrik(s, oppen: oppen == i) }
-                            .buttonStyle(.plain)
-                            .accessibilityHint(oppen == i ? "Döljer det som finns på sträckan" : "Visar det som finns på sträckan")
-                        if oppen == i { detaljer(s) }
+                    if del.sista > del.forsta {
+                        Text("Lugnt i \(Int((Double(strackor[del.sista].tillM - s.franM) / 1000).rounded())) km. Inget halt rapporterat.")
+                            .font(Typo.sans(13)).lineSpacing(2).foregroundStyle(Brand.text2)
+                            .frame(maxWidth: .infinity, minHeight: 36, alignment: .leading)
+                            .padding(.top, 4).padding(.bottom, 8)
+                    } else {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Button { oppen = oppen == i ? nil : i } label: { rubrik(s, oppen: oppen == i) }
+                                .buttonStyle(.plain)
+                                .accessibilityHint(oppen == i ? "Döljer det som finns på sträckan" : "Visar det som finns på sträckan")
+                            if oppen == i { detaljer(s) }
+                        }
+                        .padding(.top, 4).padding(.bottom, 8)
                     }
-                    .padding(.top, 4).padding(.bottom, 8)
                 }
             }
             plats(mal, m: totalM, fylld: true)
@@ -68,7 +97,8 @@ struct ResansStrackor: View {
 
     private func detaljer(_ s: Resstracka) -> some View {
         let perId = Dictionary(s.rader.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
-        let grupper = ResansRapport.grupperade(s.rader).sorted { $0.langsM < $1.langsM }
+        // Restidssträckorna är mätpunkter och inga händelser (DECISIONS #983): de visas inte.
+        let grupper = ResansRapport.grupperade(s.rader.filter { $0.slag != .restid }).sorted { $0.langsM < $1.langsM }
         return VStack(alignment: .leading, spacing: 0) {
             ForEach(grupper, id: \.id) { g in
                 DashedDivider()
