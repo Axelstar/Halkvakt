@@ -1,0 +1,21 @@
+# Raden Varning före resan på startsidan och bladet med frågan (DECISIONS #979, #981). Fotostudions argument svarar nej
+# på frågan vid start, så raden visar Av och bladet visar frågan igen.
+appId: se.halkvakt.app
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fotostudio_facit: "1"
+- scrollUntilVisible:
+    element: ".*Varning före resan.*"
+    direction: DOWN
+- takeScreenshot: bilder/fragan-1-raden
+- tapOn: ".*Varning före resan.*"
+- assertVisible: "Vill du ha en varning innan du kör\\?"
+- takeScreenshot: bilder/fragan-2-bladet
+- scrollUntilVisible:
+    element: "Inte nu"
+    direction: DOWN
+- takeScreenshot: bilder/fragan-3-knapparna
+- tapOn: "Inte nu"
+- assertVisible: "VAKTEN"

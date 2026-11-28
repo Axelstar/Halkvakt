@@ -28,6 +28,11 @@ final class Servernotis {
         if slag == "erbjudande" {
             guard !GuardManager.shared.running, let partner, let url = lank.flatMap(URL.init(string:)), url.scheme == "https" else { return }
             erbjudande = Erbjudande(rubrik: rubrik, text: text, partner: partner, lank: url)
+        } else if slag == "fragan" {
+            // Frågan om varningen före resan (DECISIONS #979 fall 2): startsidan med bladet över.
+            guard !GuardManager.shared.running else { return }
+            visaStart = true
+            Platsdelning.shared.visaBladet = true
         } else {
             visaStart = true
         }
