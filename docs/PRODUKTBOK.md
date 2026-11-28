@@ -365,6 +365,12 @@ förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Forts�
 företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
 Först då skickas något.
 
+**Från 0.4.3, efter (82) (DECISIONS #987), på iPhone: vakten minns att telefonen inte är i en bil.** Efter två lägen i rad som
+inte kan vara en bil (över 160 km/h, över 1 500 m, eller en förflyttning ingen bil hinner) tiger rösten tills telefonen har gett
+två minuter av lägen som kan vara en bil. En replik som fått vänta mer än tio sekunder på ljudet sägs inte. Under Betatest står
+*Felsökning*: för de tjugo senaste varningarna farten, höjden, noggrannheten, lägets ålder och hur länge rösten dröjde. Ingen
+position, och inget skickas. Ingen skärmbild än.
+
 **Från 0.4.3, efter (81) (DECISIONS #985): en sökt resa går att spara.** Under en planerad resa står knappen *Spara resan*. Ett
 tryck öppnar en ruta med namnet (adressen är förvald) och raden *Adressen sparas i telefonen. Vägen hämtas från Apple varje gång
 du öppnar resan.* Sparad resa visar *Sparad under Resor*. I fliken *Resor* står listan *Sökta resor*, högst fem, med namnet och

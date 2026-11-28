@@ -76,6 +76,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // Androids rörelseigenkänning. Apples lås gäller Bluetooth, inte plats.
     // Fartkollen (90 s, 30 km/h fem lägen i rad) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
     private var fartkoll = Fartkollen()
+    /// Ej bil, ihågkommet (DECISIONS #987). Tidpunkten överlever en omstart av appen; den säger inget om var telefonen är.
+    private var ejbil = Ejbil(sedan: UserDefaults.standard.object(forKey: "k.ejbil.sedan") as? Double)
     /// Den här körningen startades av självväckningen (för kvittots körtid).
     private var autoWoke = false
     /// Vila efter misslyckat prov — annars kan en sen positionsleverans starta nästa direkt.
@@ -433,9 +435,17 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         // a speed for the self-start nor a displacement for the idle stop.
         let fresh = Date.now.timeIntervalSince(loc.timestamp) <= Self.maxFixAgeS
         let exact = fresh && loc.horizontalAccuracy >= 0 && loc.horizontalAccuracy <= EngineConfig().maxAccuracyM
+        var ejBil = false
         if exact {
             if let p = prevLoc { distanceKm += loc.distance(from: p) / 1000 }
             prevLoc = loc
+            let fore = ejbil.sedan
+            ejBil = ejbil.onFix(t: loc.timestamp.timeIntervalSince1970, lon: loc.coordinate.longitude, lat: loc.coordinate.latitude,
+                                kmh: loc.speed >= 0 ? loc.speed * 3.6 : nil, altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil)
+            // Sparas när regeln låses eller öppnas, och sedan högst en gång i minuten.
+            if (ejbil.sedan == nil) != (fore == nil) || (ejbil.sedan ?? 0) - (fore ?? 0) >= 60 {
+                UserDefaults.standard.set(ejbil.sedan, forKey: "k.ejbil.sedan")
+            }
         }
         recomputeNearby()
 
@@ -485,6 +495,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         // GPS-kvalitet: no warning decision on a poor position, and none without the phone's own speed. Without it the engine
         // works the speed and the heading out of the jump between two positions (kept for the vectors and the shadow engine).
         guard exact, loc.speed >= 0 else { return }
+        // Ej bil, ihågkommet (DECISIONS #987): efter två lägen i rad som inte kan vara en bil tiger vakten tills telefonen har
+        // gett två minuter av lägen som kan vara det.
+        guard !ejBil else { return }
         let fix = Fix(t: loc.timestamp.timeIntervalSince1970,
                       lon: loc.coordinate.longitude,
                       lat: loc.coordinate.latitude,
@@ -511,6 +524,10 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             AlertEntry(t: nu, kind: alert.kind.rawValue, text: alert.text, id: alert.hazardId))
         history.insert(alert, at: 0)
         if history.count > 50 { history.removeLast() }
+        // Felsökningen (DECISIONS #987): vad GPS:en sa när varningen bestämdes. Bara i telefonen, och ingen position.
+        Prefs.shared.varningsspar = Array((Prefs.shared.varningsspar + [Varningsspar(
+            t: nu, kind: alert.kind.rawValue, kmh: loc.speed * 3.6, hojdM: loc.verticalAccuracy > 0 ? loc.altitude : nil,
+            noggrM: loc.horizontalAccuracy, alderS: nu.timeIntervalSince(loc.timestamp), sagdEfterS: nil)]).suffix(Varningsspar.max))
         SpeechService.shared.speak(alert.text)
         headsUpTask?.cancel()
         headsUpTask = Task {

@@ -85,6 +85,16 @@ struct InstallningarView: View {
         m >= 1000 ? String(format: "%.1f km", m / 1000).replacingOccurrences(of: ".", with: ",") : "\(Int(m)) m"
     }
 
+    /// "86 km/h · höjd 40 m · ±12 m · läget 0,4 s gammalt · sagd efter 0,3 s"
+    private static func sparText(_ s: Varningsspar) -> String {
+        func tal(_ v: Double, _ decimaler: Int = 0) -> String {
+            String(format: "%.\(decimaler)f", v).replacingOccurrences(of: ".", with: ",")
+        }
+        return ["\(tal(s.kmh)) km/h", s.hojdM.map { "höjd \(tal($0)) m" } ?? "ingen höjd", "±\(tal(s.noggrM)) m",
+                "läget \(tal(s.alderS, 1)) s gammalt", s.sagdEfterS.map { "sagd efter \(tal($0, 1)) s" } ?? "inte sagd"]
+            .joined(separator: " · ")
+    }
+
     @ViewBuilder private func innehall(_ sida: Sida) -> some View {
         switch sida {
         case .varnaFor:
@@ -192,6 +202,26 @@ struct InstallningarView: View {
                 } else {
                     ForEach(matningen.resor) { resa in
                         MatningRad(resa: resa, divider: resa.id != matningen.resor.last?.id)
+                    }
+                }
+            }
+            // Felsökningen (DECISIONS #987): vad GPS:en sa när de senaste varningarna bestämdes. Ingen position, och inget skickas.
+            MonoLabel(text: "Felsökning").padding(.top, 28).padding(.bottom, 6).padding(.horizontal, 4)
+            Text("Vad telefonens GPS sa när de senaste varningarna kom: fart, höjd och noggrannhet. Ingen position. Stannar i telefonen.")
+                .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
+                .padding(.bottom, 10).padding(.horizontal, 4)
+            RowPanel {
+                if prefs.varningsspar.isEmpty {
+                    Text("Inga varningar än.").font(Typo.sans(15)).foregroundStyle(Brand.dim)
+                        .padding(.vertical, 15).frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    ForEach(Array(prefs.varningsspar.reversed().enumerated()), id: \.element) { i, s in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("\(s.t.dagOchKlockslag) · \(s.kind)").font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                            Text(Self.sparText(s)).font(Typo.mono(11)).foregroundStyle(Brand.text2).textSelection(.enabled)
+                        }
+                        .padding(.vertical, 12).frame(maxWidth: .infinity, alignment: .leading)
+                        if i < prefs.varningsspar.count - 1 { DashedDivider() }
                     }
                 }
             }

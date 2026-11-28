@@ -26,7 +26,25 @@ final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
         let u = AVSpeechUtterance(string: text)
         u.voice = AVSpeechSynthesisVoice(language: "sv-SE")
         u.rate = AVSpeechUtteranceDefaultSpeechRate
+        begard = .now
         synth.speak(u)
+    }
+
+    /// När den senaste repliken begärdes. En replik som börjar mer än `forGammalS` senare sägs inte: en varning som fått vänta på
+    /// ljudet gäller inte längre där bilen är (DECISIONS #987).
+    private var begard: Date?
+    static let forGammalS: TimeInterval = 10
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        Task { @MainActor in
+            guard let begard = self.begard else { return }
+            let drojde = Date.now.timeIntervalSince(begard)
+            if drojde > Self.forGammalS { self.synth.stopSpeaking(at: .immediate) }
+            if var sist = Prefs.shared.varningsspar.last, sist.sagdEfterS == nil {
+                sist.sagdEfterS = drojde
+                Prefs.shared.varningsspar[Prefs.shared.varningsspar.count - 1] = sist
+            }
+        }
     }
 
     /// Testlarm för bakgrundsljudet (Apple 2.5.4, 5/10): talar efter `delay` sekunder så man hinner gå till
@@ -104,6 +122,8 @@ final class Prefs {
     /// Kort #203: resans varningar, persistenta. iOS hade förut bara "senast sagt" — bara resans SISTA
     /// varning gick att svara på. Nyast SIST, som Androids AlertHistory.
     var history: [AlertEntry] { didSet { d.set(try? JSONEncoder().encode(history), forKey: "k.history") } }
+    /// Felsökningen (DECISIONS #987): de senaste varningarnas GPS-värden. Nyast sist.
+    var varningsspar: [Varningsspar] { didSet { d.set(try? JSONEncoder().encode(varningsspar), forKey: "k.varningsspar") } }
     /// Kort #203: när den pågående resan började. Fönstret som "alla" i "Ja, alla stämde" betyder.
     /// Överlever omstart: notisens knapp kan tryckas långt efter att appen dödats.
     var tripStart: Date? { didSet { d.set(tripStart, forKey: "k.tripStart") } }
@@ -161,6 +181,7 @@ final class Prefs {
         facitStatusAt = d.object(forKey: "k.facitStatusAt") as? Date
         missar = d.data(forKey: "k.missar").flatMap { try? JSONDecoder().decode([MissEntry].self, from: $0) } ?? []
         history = d.data(forKey: "k.history").flatMap { try? JSONDecoder().decode([AlertEntry].self, from: $0) } ?? []
+        varningsspar = d.data(forKey: "k.varningsspar").flatMap { try? JSONDecoder().decode([Varningsspar].self, from: $0) } ?? []
         tripStart = d.object(forKey: "k.tripStart") as? Date
         lastTripEnd = d.object(forKey: "k.lastTripEnd") as? Date
         lastTripKm = d.double(forKey: "k.lastTripKm")
