@@ -365,6 +365,9 @@ förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Forts�
 företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
 Först då skickas något.
 
+**Från 0.4.3, efter (82) (DECISIONS #981 punkt 2): startsidans karta.** Kartans mitt flyttas en bit från föraren mot landets
+mitt, så att Sverige fyller bilden, och föraren och den närmaste faran är kvar i bild. Kartan är högre när inget är rapporterat
+nära och lägre när listan *Nära dig just nu* står under den. Ingen skärmbild än.
 **Från 0.4.3, efter (82) (DECISIONS #988), på iPhone: på en flygbana talar vakten inte.** Inom 300 m från en flygbana på en
 svensk flygplats med reguljär trafik säger rösten ingenting och vakten startar inte av sig själv. Inget syns på skärmen.
 
