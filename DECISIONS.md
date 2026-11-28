@@ -20210,3 +20210,25 @@ Sökningen går mot Apple och levande vägdata och kan ge ostadiga prov.
 **Alternativ.** Fortsätta utan: varje fel i ett flöde hittas då på Axels telefon, som tidshjulet 28/11.
 
 **Stomdokument:** inga — ett provverktyg i CI, ingen del av appen eller systemet
+
+## #985 (28/11 2026) En sparad sökt resa sparar adressen, inte vägen (preciserar DECISIONS #982 punkt 3; kort #659)
+**Beslut.** Axel 28/11: *"Yes let's do 1"*. En sökt resa sparas som namnet föraren ger den och adressen som söktes, som text.
+Vägen sparas inte. När resan öppnas under *Resor* söks adressen igen hos Apple, och vägen räknas därifrån föraren är.
+
+**Skälet.** Apples utvecklaravtal, bilaga 6 punkt 2.5, säger att deras kartdata inte får lagras annat än tillfälligt, och
+definitionen av kartdata räknar upp koordinater. Vägen Apple räknar ut är koordinater, så en sparad väg vore lagrad kartdata.
+Samma läsning som om kartan i DECISIONS #933. Läsningen är Claudes och ingen jurists.
+
+**Följder.**
+1. Listan kan inte visa läget just nu för en sökt resa förrän den öppnas. Raden säger *Öppna för att se läget*.
+2. Varje öppning skickar förarens position och adressen till Apple, som en sökning. Det står under *När du söker* i fliken och
+   i rutan där resan sparas. Raden i CLAUDE.md är ändrad i samma commit. integritet.html i kartrepot säger i dag *när du söker*
+   och ska få samma tillägg innan ett bygge med detta går till App Store.
+3. Sökta resor har en egen lista, högst fem, i en fil i telefonen utanför säkerhetskopian (`Sokresor`). De körda resorna och
+   ruttspärren (DECISIONS #616) rörs inte.
+4. Android byggs på samma sätt, med Google i Apples ställe. Googles villkor är inte lästa för det här än.
+
+**Alternativ.** Bara körda resor sparas, som i dag: enklast, men den som planerar en resa kan inte spara den förrän den är körd.
+Spara vägen som den är: det Apples villkor inte tillåter, som de är lästa här.
+
+**Stomdokument:** APP — fliken Resor och sparade sökta resor; FAV — hur en sökt resa sparas

@@ -24,6 +24,8 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
         /// Apples restid i sekunder. nil i en resa som sparades före DECISIONS #930.
         var restidS: Double?
         var avresa: Date?
+        /// Adressen som text, så att resan kan sparas och sökas igen (DECISIONS #985). nil i en resa från före det.
+        var fraga: String?
     }
 
     /// Ett förslag i söklistan: namnet och raden under.
@@ -114,9 +116,27 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
             lage = .fel("Halkvakt behöver platsen för att räkna ut vägen härifrån. Slå på den och sök igen.")
             return false
         }
+        return await rakna(MKLocalSearch.Request(completion: traff), mal: val.titel,
+                           fraga: val.under.isEmpty ? val.titel : "\(val.titel), \(val.under)")
+    }
+
+    /// En sparad sökt resa öppnas (DECISIONS #985): adressen söks igen hos Apple, och vägen räknas härifrån.
+    func planera(sokt fraga: String, namn: String) async -> Bool {
+        let status = CLLocationManager().authorizationStatus
+        guard status == .authorizedWhenInUse || status == .authorizedAlways else {
+            GuardManager.shared.requestLocationPermission()
+            lage = .fel("Halkvakt behöver platsen för att räkna ut vägen härifrån. Slå på den och försök igen.")
+            return false
+        }
+        let f = MKLocalSearch.Request()
+        f.naturalLanguageQuery = fraga
+        return await rakna(f, mal: namn, fraga: fraga)
+    }
+
+    private func rakna(_ sokning: MKLocalSearch.Request, mal namn: String, fraga text: String) async -> Bool {
         lage = .soker
         do {
-            let svar = try await MKLocalSearch(request: MKLocalSearch.Request(completion: traff)).start()
+            let svar = try await MKLocalSearch(request: sokning).start()
             guard let mal = svar.mapItems.first else {
                 lage = .fel("Adressen hittades inte. Prova en annan.")
                 return false
@@ -132,8 +152,8 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
             let n = vag.polyline.pointCount
             var koord = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: n)
             vag.polyline.getCoordinates(&koord, range: NSRange(location: 0, length: n))
-            plan = Plan(mal: val.titel, punkter: koord.map { [$0.longitude, $0.latitude] }, km: vag.distance / 1000,
-                        restidS: vag.expectedTravelTime, avresa: nil)
+            plan = Plan(mal: namn, punkter: koord.map { [$0.longitude, $0.latitude] }, km: vag.distance / 1000,
+                        restidS: vag.expectedTravelTime, avresa: nil, fraga: text)
             Self.radera()
             AvreseNotis.taBort()
             lage = .vilar
