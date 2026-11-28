@@ -182,12 +182,16 @@ private fun DagensRad(lager: RuttLager, v: Vantande, full: Boolean) {
             Text("Listan är full. Ta bort en resa nedan för att spara den här.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp)
         } else {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                OutlinedTextField(namn, { namn = it }, placeholder = { Text("t.ex. Jobbet") }, singleLine = true,
+                // Ett fyllt fält utan ram: den inramade rutan gjorde kortet tyngre än resten av fliken (Axel 28/11).
+                androidx.compose.foundation.text.BasicTextField(namn, { namn = it }, singleLine = true,
+                    cursorBrush = androidx.compose.ui.graphics.SolidColor(Brand.yellow),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = Brand.text, fontFamily = Typo.sans, fontSize = 16.sp),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { spara() }),
-                    colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Brand.text, unfocusedTextColor = Brand.text,
-                        focusedBorderColor = Brand.yellow, cursorColor = Brand.yellow),
-                    modifier = Modifier.weight(1f))
+                    modifier = Modifier.weight(1f).background(Raised2, RoundedCornerShape(12.dp)).padding(horizontal = 14.dp, vertical = 14.dp),
+                    decorationBox = { falt ->
+                        Box { if (namn.isEmpty()) Text("t.ex. Jobbet", color = Brand.dim, fontFamily = Typo.sans, fontSize = 16.sp); falt() }
+                    })
                 Text("Spara", color = Brand.yellow, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 15.sp,
                     modifier = Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { spara() }.wrapContentHeight().padding(start = 12.dp))
             }

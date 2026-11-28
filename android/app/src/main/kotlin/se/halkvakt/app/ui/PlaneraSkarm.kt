@@ -5,6 +5,8 @@ package se.halkvakt.app.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.border
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.background
@@ -75,8 +77,9 @@ fun Resesok(activity: MainActivity, fokusera: Boolean, fokuserad: () -> Unit, kl
         BasicTextField(text, { text = it }, singleLine = true, cursorBrush = SolidColor(Brand.yellow),
             textStyle = TextStyle(color = Brand.text, fontFamily = Typo.sans, fontSize = 17.sp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            modifier = Modifier.fillMaxWidth().focusRequester(fokus).background(Brand.panel, RoundedCornerShape(14.dp))
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+            // En kapsel med kant, som på iPhone: den platta grå rutan läste inte som en sökruta (Axel 28/11).
+            modifier = Modifier.fillMaxWidth().focusRequester(fokus).background(Brand.panel, RoundedCornerShape(28.dp))
+                .border(1.dp, Color(0xFF26323A), RoundedCornerShape(28.dp)).padding(horizontal = 20.dp, vertical = 17.dp),
             decorationBox = { falt ->
                 Box { if (text.isEmpty()) Text("Sök adress eller ort", color = Brand.dim, fontFamily = Typo.sans, fontSize = 17.sp); falt() }
             })
