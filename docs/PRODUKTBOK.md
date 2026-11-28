@@ -139,7 +139,8 @@ vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapp
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
 avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns
 längs vägen. Den öppnar Halkvakt, där läget hämtas färskt."* Notisen lyder *"Dags att se vägen till {målet}"*, *"Du åker om
-en kvart. Öppna Halkvakt och se läget längs vägen."* En resa med avresetid står överst på Redo som *PLANERAD RESA*,
+en kvart. Öppna Halkvakt och se läget längs vägen."* (från 0.4.3 (82): *"{målet} om en kvart"*, *"Öppna Halkvakt och se läget
+längs vägen."*, eftersom rubriken klipptes på låsskärmen) En resa med avresetid står överst på Redo som *PLANERAD RESA*,
 *Till {målet}*, *Avresa {dag och tid}. Se läget längs vägen.*, tills sex timmar efter avresan, och *TA BORT RESAN* tar
 bort den. Under sökrutan står *NÄR DU SÖKER*: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och
 vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."* **Löftets rad på Redo är inte ändrad** (#872): vad Apple får veta

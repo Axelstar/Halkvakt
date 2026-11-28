@@ -17,8 +17,9 @@ enum AvreseNotis {
         let status = await HeadsUpService.shared.status()
         guard status == .authorized || status == .provisional || status == .ephemeral else { return false }
         let innehall = UNMutableNotificationContent()
-        innehall.title = "Dags att se vägen till \(mal)"
-        innehall.body = "Du åker om en kvart. Öppna Halkvakt och se läget längs vägen."
+        // Målet först: rubriken klipptes på låsskärmen mitt i namnet (Axels skärmbild 28/11, Dags att se vägen till Stora Trädgår…).
+        innehall.title = "\(mal) om en kvart"
+        innehall.body = "Öppna Halkvakt och se läget längs vägen."
         innehall.sound = .default
         let delar = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: nar)
         let utlosare = UNCalendarNotificationTrigger(dateMatching: delar, repeats: false)
