@@ -348,14 +348,30 @@ private fun ResansStrackor(strackor: List<Resstracka>, mal: String, totalM: Int,
         val km = "${(m / 1000.0).roundToInt()} km"
         Resstrackor.tidVid(m, totalM, restidS, avresaMs)?.let { "$km · ca ${klockslag(it)}" } ?: km
     }
+    // Lugna sträckor i följd slås ihop till en rad (DECISIONS #983), som på iPhone. En ensam lugn sträcka går att öppna som de andra.
+    val delar = remember(strackor) {
+        val ut = mutableListOf<IntRange>()
+        strackor.indices.forEach { i ->
+            val senast = ut.lastOrNull()
+            if (strackor[i].lage == StrackLage.LUGNT && senast != null && strackor[senast.last].lage == StrackLage.LUGNT) ut[ut.size - 1] = senast.first..i
+            else ut.add(i..i)
+        }
+        ut
+    }
     Column {
-        strackor.forEachIndexed { i, s ->
+        delar.forEach { del ->
+            val i = del.first
+            val s = strackor[i]
             PlatsRad(s.fran ?: "Start", marke(s.franM), false)
             Row(Modifier.height(IntrinsicSize.Min)) {
                 Box(Modifier.width(20.dp).fillMaxHeight().padding(vertical = 2.dp), contentAlignment = Alignment.Center) {
                     Box(Modifier.width(4.dp).fillMaxHeight().background(Brand.dim, RoundedCornerShape(2.dp)))
                 }
-                Column(Modifier.weight(1f).padding(start = 12.dp, top = 4.dp, bottom = 8.dp)) {
+                if (del.last > del.first) {
+                    Text("Lugnt i ${((strackor[del.last].tillM - s.franM) / 1000.0).roundToInt()} km. Inget halt rapporterat.", color = Brand.text2,
+                        fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 19.sp,
+                        modifier = Modifier.weight(1f).heightIn(min = 36.dp).padding(start = 12.dp, top = 4.dp, bottom = 8.dp).wrapContentHeight())
+                } else Column(Modifier.weight(1f).padding(start = 12.dp, top = 4.dp, bottom = 8.dp)) {
                     Column(Modifier.fillMaxWidth().heightIn(min = 52.dp)
                         .clickable(role = Role.Button, onClickLabel = if (oppen == i) "Döljer det som finns på sträckan" else "Visar det som finns på sträckan") {
                             oppen = if (oppen == i) null else i
@@ -400,7 +416,7 @@ private val ETIKETT = mapOf(RapportSlag.HALKA to "Halka", RapportSlag.FRYSRISK t
 private fun Detaljer(s: Resstracka) {
     val perId = s.rader.associateBy { it.id }
     Column(Modifier.padding(bottom = 6.dp)) {
-        ResansRapport.grupperade(s.rader).sortedBy { it.langsM }.forEach { g ->
+        ResansRapport.grupperade(s.rader.filter { it.slag != RapportSlag.RESTID }).sortedBy { it.langsM }.forEach { g ->
             DashedDivider()
             Row(Modifier.fillMaxWidth().padding(vertical = 11.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 MonoLabel(ETIKETT[g.slag] ?: g.slag.wire, modifier = Modifier.width(82.dp))
@@ -423,7 +439,7 @@ internal fun varde(g: RapportGrupp, vag: String?): String {
 /** En rad per sort under Övrigt på vägen, inte en per händelse (DECISIONS #933). Olyckorna står överst. */
 private val SORTER = listOf("Olyckor" to setOf(RapportSlag.OLYCKA),
     "Vägarbeten" to setOf(RapportSlag.VAGARBETE, RapportSlag.HASTIGHET, RapportSlag.OMLEDNING), "Fartkameror" to setOf(RapportSlag.KAMERA),
-    "Hinder" to setOf(RapportSlag.HINDER, RapportSlag.VILT), "Trafik" to setOf(RapportSlag.KO, RapportSlag.FARJA))
+    "Hinder" to setOf(RapportSlag.HINDER), "Vilt" to setOf(RapportSlag.VILT), "Trafik" to setOf(RapportSlag.KO, RapportSlag.FARJA))
 
 /** Det som kan göra en annan väg värd att se efter: olycka, hinder, halka, kö och omledning. */
 private val TIPS_SLAG = setOf(RapportSlag.OLYCKA, RapportSlag.HINDER, RapportSlag.HALKA, RapportSlag.KO, RapportSlag.OMLEDNING)
@@ -442,12 +458,17 @@ private fun Ovrigt(r: Rapporten.Planerad, lugn: Boolean) {
         // Med sträckorna ovanför står varje rad redan under sin sträcka (DECISIONS #932). Här står hur många det är av varje slag.
         val sorter = SORTER.map { (namn, slag) -> namn to rader.count { it.slag in slag } }.filter { it.second > 0 }
         val smhi = grupper.filter { it.slag == RapportSlag.SMHI }
-        RowPanel {
-            sorter.forEachIndexed { i, (namn, antal) -> ReceiptRow(namn, "$antal", divider = i < sorter.size - 1 || smhi.isNotEmpty()) }
-            smhi.forEachIndexed { i, g -> OvrigRad(g.rubrik, g.text, i < smhi.size - 1) }
+        // En mening i stället för rader med antal (DECISIONS #983): talen går inte att göra något med, sträckorna gör det.
+        if (sorter.isNotEmpty()) {
+            val led = sorter.map { (namn, antal) -> "${namn.lowercase()} ($antal)" }
+            val lista = if (led.size > 1) led.dropLast(1).joinToString(", ") + " och " + led.last() else led.first()
+            Text("Också längs vägen: $lista. Öppna en sträcka för att se vad det är.", color = Brand.text2, fontFamily = Typo.sans,
+                fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(horizontal = 4.dp))
         }
-        if (sorter.isNotEmpty()) Text("Öppna en sträcka för att se vad det är.", color = Brand.dim, fontFamily = Typo.sans, fontSize = 14.sp,
-            lineHeight = 21.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
+        if (smhi.isNotEmpty()) {
+            Spacer(Modifier.height(if (sorter.isEmpty()) 0.dp else 14.dp))
+            RowPanel { smhi.forEachIndexed { i, g -> OvrigRad(g.rubrik, g.text, i < smhi.size - 1) } }
+        }
     } else {
         RowPanel {
             grupper.forEachIndexed { i, g ->
@@ -459,13 +480,10 @@ private fun Ovrigt(r: Rapporten.Planerad, lugn: Boolean) {
     ResansRapport.tomtRad(r.rader, r.gammaltVaglag, r.gamlaOlyckor)?.let {
         Text(it, color = Brand.dim, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
     }
-    MonoLabel("Halkvakt tror · beta", modifier = Modifier.padding(top = 24.dp, bottom = 10.dp, start = 4.dp))
-    val tomt = ResansRapport.kandidatTomt(r.kandidat, r.gammaltVaglag)
+    // Rutan visas bara när beräkningen varnar (DECISIONS #983). Förut stod en text också när den inte gjorde det.
     val kandidat = r.kandidat
-    if (tomt != null || kandidat == null) {
-        Text(tomt ?: ResansRapport.KANDIDAT_AV, color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp,
-            modifier = Modifier.padding(start = 4.dp))
-    } else {
+    if (ResansRapport.kandidatTomt(r.kandidat, r.gammaltVaglag) == null && kandidat != null) {
+        MonoLabel("Halkvakt tror · beta", modifier = Modifier.padding(top = 24.dp, bottom = 10.dp, start = 4.dp))
         RowPanel { kandidat.forEachIndexed { i, k -> OvrigRad(k.rubrik, k.text, i < kandidat.size - 1, oppenFranStart = true) } }
         Text(ResansRapport.KANDIDAT_FOT, color = Brand.dim, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp,
             modifier = Modifier.padding(top = 14.dp, start = 4.dp))
